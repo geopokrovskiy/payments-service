@@ -1,0 +1,1 @@
+ALTER table payment_method DROP column payment_method_required_fields_id;
