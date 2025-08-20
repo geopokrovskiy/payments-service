@@ -18,4 +18,9 @@ public class PaymentMethodRequiredFieldsService {
         return paymentMethodRequiredFieldsRepository.findByNameAndPaymentMethodName(name, paymentMethodName)
                 .orElse(null);
     }
+
+    public PaymentMethodRequiredFields getRequiredFieldsByNameAndPaymentMethodId(String name, Long id) {
+        return paymentMethodRequiredFieldsRepository.findByNameAndPaymentMethodId(name, id)
+                .orElse(null);
+    }
 }

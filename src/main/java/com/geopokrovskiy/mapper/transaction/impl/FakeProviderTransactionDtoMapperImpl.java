@@ -7,7 +7,6 @@ import com.geopokrovskiy.mapper.transaction.PrepareTransactionDtoMapper;
 import com.geopokrovskiy.service.PaymentMethodRequiredFieldsService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -26,6 +25,16 @@ public class FakeProviderTransactionDtoMapperImpl implements PrepareTransactionD
         Map<PaymentMethodRequiredFields, String> requiredFieldsStringMap =
                 fields.entrySet().stream().collect(Collectors.toMap(
                         entry -> paymentMethodRequiredFieldsService.getRequiredFieldsByNameAndPaymentMethodName(entry.getKey(), paymentMethodName), Map.Entry::getValue)
+                );
+        return new Transaction(requiredFieldsStringMap);
+    }
+
+    @Override
+    public Transaction map(PrepareTransactionDto prepareTransactionDto, Long paymentMethodId) {
+        Map<String, String> fields = prepareTransactionDto.getFields();
+        Map<PaymentMethodRequiredFields, String> requiredFieldsStringMap =
+                fields.entrySet().stream().collect(Collectors.toMap(
+                        entry -> paymentMethodRequiredFieldsService.getRequiredFieldsByNameAndPaymentMethodId(entry.getKey(), paymentMethodId), Map.Entry::getValue)
                 );
         return new Transaction(requiredFieldsStringMap);
     }

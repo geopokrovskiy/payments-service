@@ -5,4 +5,6 @@ import com.geopokrovskiy.entity.Transaction;
 
 public interface PrepareTransactionDtoMapper {
     Transaction map(PrepareTransactionDto prepareTransactionDto, String paymentMethodName);
+
+    Transaction map(PrepareTransactionDto prepareTransactionDto, Long paymentMethodId);
 }

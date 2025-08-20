@@ -1,9 +1,10 @@
 package com.geopokrovskiy.service.transaction;
 
+import com.geopokrovskiy.dto.transaction_dto.CreateTransactionDto;
+import com.geopokrovskiy.dto.transaction_dto.TransactionResponseDto;
 import com.geopokrovskiy.entity.PaymentMethod;
 import com.geopokrovskiy.entity.PaymentMethodRequiredFields;
 import com.geopokrovskiy.entity.Transaction;
-import com.geopokrovskiy.dto.transaction_dto.CreateTransactionDto;
 
 import java.util.List;
 import java.util.Map;
@@ -36,10 +37,7 @@ public interface TransactionService {
         );
     }
 
-    CreateTransactionDto createTransaction(PaymentMethod paymentMethod, Transaction transaction);
+    TransactionResponseDto createTransaction(PaymentMethod paymentMethod, Map<String, Object> requestBody);
 
-    String processTransaction(CreateTransactionDto createTransactionDto);
-
-    PaymentMethod getPaymentMethodByName(String name);
 
 }
