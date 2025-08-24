@@ -9,19 +9,22 @@ import com.geopokrovskiy.dto.transaction_dto.impl.create_transaction.FakeProvide
 import com.geopokrovskiy.dto.transaction_dto.impl.create_transaction.FakeProviderTopUpCustomerDto;
 import com.geopokrovskiy.dto.transaction_dto.impl.prepare_transaction.FakeProviderTopUpPrepareTransactionDto;
 import com.geopokrovskiy.dto.transaction_dto.impl.transaction_response.FakeProviderTopUpTransactionResponseDto;
+import com.geopokrovskiy.dto.transaction_dto.impl.transaction_response.error.ErrorTransactionResponseDto;
 import com.geopokrovskiy.entity.PaymentMethod;
 import com.geopokrovskiy.entity.Transaction;
+import com.geopokrovskiy.exception.RequiredFieldAbsentException;
+import com.geopokrovskiy.exception.RequiredFieldInvalidException;
+import com.geopokrovskiy.intercept.LoggingInterceptor;
 import com.geopokrovskiy.mapper.transaction.PrepareTransactionDtoMapper;
 import com.geopokrovskiy.service.PaymentMethodService;
+import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -42,6 +45,8 @@ public class FakeProviderTopUpCreateTransactionServiceImpl implements Transactio
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    private final LoggingInterceptor loggingInterceptor;
+
     private final ObjectMapper objectMapper;
 
     private final PrepareTransactionDtoMapper prepareTransactionDtoMapper;
@@ -61,6 +66,11 @@ public class FakeProviderTopUpCreateTransactionServiceImpl implements Transactio
     @Value("${providers.fake-provider.methods.top-up.provider-url.uri}")
     private String PROVIDER_URL_URI;
 
+    @PostConstruct
+    public void setUp() {
+        restTemplate.getInterceptors().add(loggingInterceptor);
+    }
+
     @Override
     public TransactionResponseDto createTransaction(PaymentMethod paymentMethod, Map<String, Object> requestBody) {
 
@@ -68,7 +78,12 @@ public class FakeProviderTopUpCreateTransactionServiceImpl implements Transactio
 
         PrepareTransactionDto prepareTransactionDto = objectMapper.convertValue(requestBody, FakeProviderTopUpPrepareTransactionDto.class);
         Transaction transaction = prepareTransactionDtoMapper.map(prepareTransactionDto, paymentMethodId);
-        Map<String, String> filledRequiredFields = verifyRequiredFields(paymentMethod, transaction);
+        Map<String, String> filledRequiredFields;
+        try {
+            filledRequiredFields = verifyRequiredFields(paymentMethod, transaction);
+        } catch (RequiredFieldAbsentException | RequiredFieldInvalidException e) {
+            return new ErrorTransactionResponseDto(e.getMessage(), HttpStatusCode.valueOf(422));
+        }
 
         FakeProviderTopUpCardDto fakeProviderCardDto = new FakeProviderTopUpCardDto();
         fakeProviderCardDto.setCvv(filledRequiredFields.get("cvv"));
@@ -114,17 +129,21 @@ public class FakeProviderTopUpCreateTransactionServiceImpl implements Transactio
         String credentials = fakeProviderTopUpCreateTransactionDto.getUsername() + ":" + fakeProviderTopUpCreateTransactionDto.getPassword();
         String encodedAuth = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
         headers.set("Authorization", "Basic " + encodedAuth);
+        ResponseEntity<String> responseEntity;
         try {
             HttpEntity<CreateTransactionDto> createTransactionDtoHttpEntity = new HttpEntity<>(fakeProviderTopUpCreateTransactionDto, headers);
-            ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, createTransactionDtoHttpEntity, String.class);
+            responseEntity = restTemplate.postForEntity(url, createTransactionDtoHttpEntity, String.class);
             String responseBody = responseEntity.getBody();
             return objectMapper.readValue(responseBody, FakeProviderTopUpTransactionResponseDto.class);
+        } catch (HttpClientErrorException e) {
+            log.error(e.getMessage());
+            return new ErrorTransactionResponseDto("Error during dto serialization", e.getStatusCode());
         } catch (RestClientException e) {
             log.error("The provider is not available");
-            throw new RestClientException(e.getMessage());
+            return new ErrorTransactionResponseDto("The provider is not available", HttpStatusCode.valueOf(503));
         } catch (IOException e) {
             log.error("Error during dto serialization: {}", e.getMessage());
-            throw new RuntimeException(e.getMessage());
+            return new ErrorTransactionResponseDto("Error during dto serialization", HttpStatusCode.valueOf(400));
         }
     }
 

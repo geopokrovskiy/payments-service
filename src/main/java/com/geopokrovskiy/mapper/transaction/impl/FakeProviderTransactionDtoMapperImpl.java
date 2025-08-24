@@ -33,9 +33,17 @@ public class FakeProviderTransactionDtoMapperImpl implements PrepareTransactionD
     public Transaction map(PrepareTransactionDto prepareTransactionDto, Long paymentMethodId) {
         Map<String, String> fields = prepareTransactionDto.getFields();
         Map<PaymentMethodRequiredFields, String> requiredFieldsStringMap =
-                fields.entrySet().stream().collect(Collectors.toMap(
-                        entry -> paymentMethodRequiredFieldsService.getRequiredFieldsByNameAndPaymentMethodId(entry.getKey(), paymentMethodId), Map.Entry::getValue)
-                );
+                fields.entrySet().stream().map(entry -> {
+                            var key = entry.getKey();
+                            var value = entry.getValue() == null ? "" : entry.getValue();
+
+                            PaymentMethodRequiredFields requiredFields = paymentMethodRequiredFieldsService.getRequiredFieldsByNameAndPaymentMethodId(key, paymentMethodId);
+                            if (requiredFields == null) {
+                                throw new IllegalArgumentException("The required field " + key + " does not exist");
+                            }
+                            return Map.entry(paymentMethodRequiredFieldsService.getRequiredFieldsByNameAndPaymentMethodId(key, paymentMethodId), value);
+                        }
+                ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         return new Transaction(requiredFieldsStringMap);
     }
 }

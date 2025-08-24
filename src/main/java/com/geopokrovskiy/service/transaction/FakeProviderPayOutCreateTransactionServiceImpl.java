@@ -9,19 +9,21 @@ import com.geopokrovskiy.dto.transaction_dto.impl.create_transaction.FakeProvide
 import com.geopokrovskiy.dto.transaction_dto.impl.create_transaction.FakeProviderPayOutCustomerDto;
 import com.geopokrovskiy.dto.transaction_dto.impl.prepare_transaction.FakeProviderPayOutPrepareTransactionDto;
 import com.geopokrovskiy.dto.transaction_dto.impl.transaction_response.FakeProviderPayOutTransactionResponseDto;
+import com.geopokrovskiy.dto.transaction_dto.impl.transaction_response.FakeProviderTopUpTransactionResponseDto;
+import com.geopokrovskiy.dto.transaction_dto.impl.transaction_response.error.ErrorTransactionResponseDto;
 import com.geopokrovskiy.entity.PaymentMethod;
 import com.geopokrovskiy.entity.Transaction;
+import com.geopokrovskiy.exception.RequiredFieldAbsentException;
+import com.geopokrovskiy.exception.RequiredFieldInvalidException;
 import com.geopokrovskiy.mapper.transaction.PrepareTransactionDtoMapper;
 import com.geopokrovskiy.service.PaymentMethodService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -67,7 +69,12 @@ public class FakeProviderPayOutCreateTransactionServiceImpl implements Transacti
 
         PrepareTransactionDto prepareTransactionDto = objectMapper.convertValue(requestBody, FakeProviderPayOutPrepareTransactionDto.class);
         Transaction transaction = prepareTransactionDtoMapper.map(prepareTransactionDto, paymentMethodId);
-        Map<String, String> filledRequiredFields = verifyRequiredFields(paymentMethod, transaction);
+        Map<String, String> filledRequiredFields;
+        try {
+            filledRequiredFields = verifyRequiredFields(paymentMethod, transaction);
+        } catch (RequiredFieldAbsentException | RequiredFieldInvalidException e) {
+            return new ErrorTransactionResponseDto(e.getMessage(), HttpStatusCode.valueOf(422));
+        }
 
 
         FakeProviderPayOutCardDto fakeProviderCardDto = new FakeProviderPayOutCardDto();
@@ -112,17 +119,21 @@ public class FakeProviderPayOutCreateTransactionServiceImpl implements Transacti
         String credentials = fakeProviderPayOutCreateTransactionDto.getUsername() + ":" + fakeProviderPayOutCreateTransactionDto.getPassword();
         String encodedAuth = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
         headers.set("Authorization", "Basic " + encodedAuth);
+        ResponseEntity<String> responseEntity;
         try {
             HttpEntity<CreateTransactionDto> createTransactionDtoHttpEntity = new HttpEntity<>(fakeProviderPayOutCreateTransactionDto, headers);
-            ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, createTransactionDtoHttpEntity, String.class);
+            responseEntity = restTemplate.postForEntity(url, createTransactionDtoHttpEntity, String.class);
             String responseBody = responseEntity.getBody();
-            return objectMapper.readValue(responseBody, FakeProviderPayOutTransactionResponseDto.class);
+            return objectMapper.readValue(responseBody, FakeProviderTopUpTransactionResponseDto.class);
+        } catch (HttpClientErrorException e) {
+            log.error(e.getMessage());
+            return new ErrorTransactionResponseDto("Error during dto serialization", e.getStatusCode());
         } catch (RestClientException e) {
             log.error("The provider is not available");
-            throw new RestClientException(e.getMessage());
+            return new ErrorTransactionResponseDto("The provider is not available", HttpStatusCode.valueOf(503));
         } catch (IOException e) {
             log.error("Error during dto serialization: {}", e.getMessage());
-            throw new RuntimeException(e.getMessage());
+            return new ErrorTransactionResponseDto("Error during dto serialization", HttpStatusCode.valueOf(400));
         }
     }
 }

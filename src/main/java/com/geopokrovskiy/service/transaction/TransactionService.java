@@ -1,10 +1,11 @@
 package com.geopokrovskiy.service.transaction;
 
-import com.geopokrovskiy.dto.transaction_dto.CreateTransactionDto;
 import com.geopokrovskiy.dto.transaction_dto.TransactionResponseDto;
 import com.geopokrovskiy.entity.PaymentMethod;
 import com.geopokrovskiy.entity.PaymentMethodRequiredFields;
 import com.geopokrovskiy.entity.Transaction;
+import com.geopokrovskiy.exception.RequiredFieldAbsentException;
+import com.geopokrovskiy.exception.RequiredFieldInvalidException;
 
 import java.util.List;
 import java.util.Map;
@@ -13,23 +14,25 @@ import java.util.stream.Collectors;
 
 public interface TransactionService {
 
-    default Map<String, String> verifyRequiredFields(PaymentMethod paymentMethod, Transaction transaction) {
+    default Map<String, String> verifyRequiredFields(PaymentMethod paymentMethod, Transaction transaction) throws RequiredFieldAbsentException, RequiredFieldInvalidException {
         List<PaymentMethodRequiredFields> paymentMethodRequiredFieldsList = paymentMethod.getRequiredFields();
         Map<PaymentMethodRequiredFields, String> filledRequiredFields = transaction.getRequiredFieldsMap();
 
 
         for (PaymentMethodRequiredFields paymentMethodRequiredField : paymentMethodRequiredFieldsList) {
             // check if all required fields have been filled
-            if (!filledRequiredFields.containsKey(paymentMethodRequiredField) ||
-                    filledRequiredFields.get(paymentMethodRequiredField) == null && paymentMethodRequiredField.isActive()) {
-                throw new IllegalArgumentException("Required field " + paymentMethodRequiredField.getName() + " is not filled");
+            if ((!filledRequiredFields.containsKey(paymentMethodRequiredField)
+                    || filledRequiredFields.get(paymentMethodRequiredField) == null
+                    || filledRequiredFields.get(paymentMethodRequiredField).isEmpty())
+                    && paymentMethodRequiredField.isActive()) {
+                throw new RequiredFieldAbsentException("Required field " + paymentMethodRequiredField.getName() + " is not filled");
             }
 
             // check if the required fields have been filled correctly
             String regex = paymentMethodRequiredField.getValidationRule();
             String value = filledRequiredFields.get(paymentMethodRequiredField);
             if (!Pattern.compile(regex).matcher(value).matches()) {
-                throw new IllegalArgumentException("Required field " + paymentMethodRequiredField.getName() + " is invalid");
+                throw new RequiredFieldInvalidException("Required field " + paymentMethodRequiredField.getName() + " is invalid");
             }
         }
         return filledRequiredFields.entrySet().stream().collect(

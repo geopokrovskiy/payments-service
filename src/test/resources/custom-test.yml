@@ -1,0 +1,19 @@
+providers:
+  fake-provider:
+    methods:
+      top-up:
+        provider-url:
+          host: localhost
+          port: 8080
+          uri: /api/v1/payments/top_up
+        notification-url:
+          host: webhook-host
+          port: 8080
+      pay-out:
+        provider-url:
+          host: localhost
+          port: 8080
+          uri: /api/v1/payments/pay_out
+        notification-url:
+          host: webhook-host
+          port: 8080
