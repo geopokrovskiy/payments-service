@@ -90,7 +90,7 @@ public class TransactionControllerFakeProviderTopUpIT {
 
 
         // Test
-        mockMvc.perform(post("/api/v1/transaction/create?paymentMethodId=1")
+        mockMvc.perform(post("/api/v1/transaction?paymentMethodId=1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(FakeProviderTestData.getCreateFakeProviderTopUpRequestBodyCorrect()))
                 .andExpect(status().isCreated())
@@ -117,7 +117,7 @@ public class TransactionControllerFakeProviderTopUpIT {
                 );
 
         // Test
-        mockMvc.perform(post("/api/v1/transaction/create?paymentMethodId=1")
+        mockMvc.perform(post("/api/v1/transaction?paymentMethodId=1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(FakeProviderTestData.getCreateFakeProviderTopUpRequestBodyCorrect()))
                 .andExpect(status().isUnauthorized())
@@ -144,7 +144,7 @@ public class TransactionControllerFakeProviderTopUpIT {
                 );
 
         // Test
-        mockMvc.perform(post("/api/v1/transaction/create?paymentMethodId=1")
+        mockMvc.perform(post("/api/v1/transaction?paymentMethodId=1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(FakeProviderTestData.getCreateFakeProviderTopUpRequestBodyCorrect()))
                 .andExpect(status().isServiceUnavailable())
@@ -157,7 +157,7 @@ public class TransactionControllerFakeProviderTopUpIT {
     public void givenNoRequiredFieldProvided_whenTopUpRequest_then422() throws Exception {
 
         // Test
-        mockMvc.perform(post("/api/v1/transaction/create?paymentMethodId=1")
+        mockMvc.perform(post("/api/v1/transaction?paymentMethodId=1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(FakeProviderTestData.getCreateFakeProviderTopUpRequestBodyWithoutPassword()))
                 .andExpect(status().isUnprocessableEntity())
@@ -169,7 +169,7 @@ public class TransactionControllerFakeProviderTopUpIT {
     public void givenIncorrectRequiredFieldFilled_whenTopUpRequest_then422() throws Exception {
 
         // Test
-        mockMvc.perform(post("/api/v1/transaction/create?paymentMethodId=1")
+        mockMvc.perform(post("/api/v1/transaction?paymentMethodId=1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(FakeProviderTestData.getCreateFakeProviderTopUpRequestBodyWithoutIncorrectField()))
                 .andExpect(status().isUnprocessableEntity())

@@ -90,7 +90,7 @@ public class TransactionControllerFakeProviderPayOutIT {
 
 
         // Test
-        mockMvc.perform(post("/api/v1/transaction/create?paymentMethodId=2")
+        mockMvc.perform(post("/api/v1/transaction?paymentMethodId=2")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(FakeProviderTestData.getCreateFakeProviderPayOutRequestBodyCorrect()))
                 .andExpect(status().isCreated())
@@ -117,7 +117,7 @@ public class TransactionControllerFakeProviderPayOutIT {
                 );
 
         // Test
-        mockMvc.perform(post("/api/v1/transaction/create?paymentMethodId=2")
+        mockMvc.perform(post("/api/v1/transaction?paymentMethodId=2")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(FakeProviderTestData.getCreateFakeProviderPayOutRequestBodyCorrect()))
                 .andExpect(status().isUnauthorized())
@@ -144,7 +144,7 @@ public class TransactionControllerFakeProviderPayOutIT {
                 );
 
         // Test
-        mockMvc.perform(post("/api/v1/transaction/create?paymentMethodId=2")
+        mockMvc.perform(post("/api/v1/transaction?paymentMethodId=2")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(FakeProviderTestData.getCreateFakeProviderPayOutRequestBodyCorrect()))
                 .andExpect(status().isServiceUnavailable())
@@ -157,7 +157,7 @@ public class TransactionControllerFakeProviderPayOutIT {
     public void givenNoRequiredFieldProvided_whenPayOutRequest_then422() throws Exception {
 
         // Test
-        mockMvc.perform(post("/api/v1/transaction/create?paymentMethodId=2")
+        mockMvc.perform(post("/api/v1/transaction?paymentMethodId=2")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(FakeProviderTestData.getCreateFakeProviderPayOutRequestBodyWithoutPassword()))
                 .andExpect(status().isUnprocessableEntity())
@@ -169,7 +169,7 @@ public class TransactionControllerFakeProviderPayOutIT {
     public void givenIncorrectRequiredFieldFilled_whenPayOutRequest_then422() throws Exception {
 
         // Test
-        mockMvc.perform(post("/api/v1/transaction/create?paymentMethodId=2")
+        mockMvc.perform(post("/api/v1/transaction?paymentMethodId=2")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(FakeProviderTestData.getCreateFakeProviderPayOutRequestBodyWithoutIncorrectField()))
                 .andExpect(status().isUnprocessableEntity())

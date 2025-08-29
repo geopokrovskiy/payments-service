@@ -8,25 +8,24 @@ import lombok.EqualsAndHashCode;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @Data
 public class FakeProviderPayOutPrepareTransactionDto extends PrepareTransactionDto {
     FakeProviderPayOutPrepareTransactionDto(String firstName, String lastName,
-                                            String cardNumber, Double amount,
+                                            String cardNumber, String amount,
                                             String country, String username,
-                                            String password, UUID accountId) {
+                                            String password, String accountId) {
         Map<String, String> fields = new HashMap<>();
         fields.put("first_name", firstName);
         fields.put("last_name", lastName);
         fields.put("card_number", cardNumber);
-        fields.put("amount", amount.toString());
+        fields.put("amount", amount);
         fields.put("country", country);
         fields.put("username", username);
         fields.put("password", password);
-        fields.put("account_id", accountId.toString());
+        fields.put("account_id", accountId);
 
         this.firstName = firstName;
         this.lastName = lastName;
@@ -37,15 +36,15 @@ public class FakeProviderPayOutPrepareTransactionDto extends PrepareTransactionD
         this.password = password;
         this.accountId = accountId;
 
-        super.fields = fields;
+        super.requiredFields = fields;
     }
 
     private String firstName;
     private String lastName;
     private String cardNumber;
-    private Double amount;
+    private String amount;
     private String country;
     private String username;
     private String password;
-    private UUID accountId;
+    private String accountId;
 }

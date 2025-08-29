@@ -1,7 +1,7 @@
 package com.geopokrovskiy.rest;
 
+import com.geopokrovskiy.dto.transaction_dto.PrepareTransactionDto;
 import com.geopokrovskiy.dto.transaction_dto.TransactionResponseDto;
-import com.geopokrovskiy.dto.transaction_dto.impl.transaction_response.error.ErrorTransactionResponseDto;
 import com.geopokrovskiy.entity.PaymentMethod;
 import com.geopokrovskiy.service.PaymentMethodService;
 import com.geopokrovskiy.service.transaction.TransactionService;
@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/transaction")
@@ -25,26 +24,12 @@ public class TransactionController {
     private final PaymentMethodService paymentMethodService;
     private final Map<String, TransactionService> services;
 
-    @PostMapping("/create")
-    public ResponseEntity<TransactionResponseDto> createTransaction(@RequestBody Map<String, Object> requestBody,
-                                                                    @RequestParam Long paymentMethodId) {
-        Optional<PaymentMethod> paymentMethodOptional = paymentMethodService.getPaymentMethodById(paymentMethodId);
-        if (paymentMethodOptional.isEmpty()) {
-            log.error("The payment method id is incorrect");
-            ErrorTransactionResponseDto responseDto = new ErrorTransactionResponseDto("The payment method id is incorrect",
-                    HttpStatusCode.valueOf(404));
-            return new ResponseEntity<>(responseDto, HttpStatusCode.valueOf(404));
-        }
-        PaymentMethod paymentMethod = paymentMethodOptional.get();
+    @PostMapping()
+    public ResponseEntity<TransactionResponseDto> createTransaction(@RequestBody PrepareTransactionDto requestBody,
+                                                                    @RequestParam Long paymentMethodId) throws Exception {
+        PaymentMethod paymentMethod = paymentMethodService.getPaymentMethodById(paymentMethodId);
         String paymentMethodName = paymentMethod.getName();
         TransactionService transactionService = services.get(paymentMethodName);
-
-        TransactionResponseDto responseDto = transactionService.createTransaction(paymentMethod, requestBody);
-        if (responseDto instanceof ErrorTransactionResponseDto) {
-            return new ResponseEntity<>(responseDto, ((ErrorTransactionResponseDto) responseDto).getHttpStatusCode());
-        }
-        return new ResponseEntity<>(responseDto, HttpStatusCode.valueOf(201));
+        return new ResponseEntity<>(transactionService.createTransaction(paymentMethod, requestBody), HttpStatusCode.valueOf(201));
     }
-
-
 }

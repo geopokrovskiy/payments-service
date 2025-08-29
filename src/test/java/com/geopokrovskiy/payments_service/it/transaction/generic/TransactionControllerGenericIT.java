@@ -27,7 +27,7 @@ public class TransactionControllerGenericIT {
     @Test
     public void givenPaymentProviderDoesNotExist_whenCreateTransaction_then404() throws Exception {
         // Test
-        mockMvc.perform(post("/api/v1/transaction/create?paymentMethodId=999999999")
+        mockMvc.perform(post("/api/v1/transaction?paymentMethodId=999999999")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(FakeProviderTestData.getCreateFakeProviderTopUpRequestBodyWithoutPassword()))
                 .andExpect(status().isNotFound())

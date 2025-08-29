@@ -1,5 +1,6 @@
 package com.geopokrovskiy.service.transaction;
 
+import com.geopokrovskiy.dto.transaction_dto.PrepareTransactionDto;
 import com.geopokrovskiy.dto.transaction_dto.TransactionResponseDto;
 import com.geopokrovskiy.entity.PaymentMethod;
 import com.geopokrovskiy.entity.PaymentMethodRequiredFields;
@@ -7,6 +8,7 @@ import com.geopokrovskiy.entity.Transaction;
 import com.geopokrovskiy.exception.RequiredFieldAbsentException;
 import com.geopokrovskiy.exception.RequiredFieldInvalidException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -40,7 +42,7 @@ public interface TransactionService {
         );
     }
 
-    TransactionResponseDto createTransaction(PaymentMethod paymentMethod, Map<String, Object> requestBody);
+    TransactionResponseDto createTransaction(PaymentMethod paymentMethod, PrepareTransactionDto requestBody) throws RequiredFieldAbsentException, RequiredFieldInvalidException, IOException;
 
 
 }

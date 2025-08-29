@@ -8,6 +8,8 @@ public class FakeProviderTestData {
     public static String getCreateFakeProviderTopUpRequestBodyCorrect() {
         return """
                 {
+                 "required_fields":
+                    {
                     "first_name": "Test",
                     "last_name": "Testov",
                     "account_id": "8a17ff45-f174-428f-a8c8-a2f5a90883aa",
@@ -18,23 +20,27 @@ public class FakeProviderTestData {
                     "country": "TST",
                     "username": "user1",
                     "password": "Password$"
+                    }
                 }
                 """;
     }
 
     public static String getCreateFakeProviderTopUpRequestBodyWithoutPassword() {
         return """
-                {
-                    "first_name": "Test",
-                    "last_name": "Testov",
-                    "account_id": "8a17ff45-f174-428f-a8c8-a2f5a90883aa",
-                    "cvv": 123,
-                    "expiration_date": "07/27",
-                    "card_number": 1234567812345678,
-                    "amount": 1.59,
-                    "country": "TST",
-                    "username": "user1"
-                }
+                 {
+                "required_fields":
+                     {
+                     "first_name": "Test",
+                     "last_name": "Testov",
+                     "account_id": "8a17ff45-f174-428f-a8c8-a2f5a90883aa",
+                     "cvv": 123,
+                     "expiration_date": "07/27",
+                     "card_number": 1234567812345678,
+                     "amount": 1.59,
+                     "country": "TST",
+                     "username": "user1"
+                     }
+                 }
                 """;
     }
 
@@ -44,6 +50,7 @@ public class FakeProviderTestData {
 
         return """
                 {
+                "required_fields": {
                     "first_name": "Test",
                     "last_name": "Testov",
                     "account_id": "8a17ff45-f174-428f-a8c8-a2f5a90883aa",
@@ -53,6 +60,7 @@ public class FakeProviderTestData {
                     "amount": 1.59,
                     "country": "TST",
                     "username": "user1"
+                    }
                 }
                 """;
     }
@@ -61,15 +69,17 @@ public class FakeProviderTestData {
     public static String getCreateFakeProviderPayOutRequestBodyCorrect() {
         return """
                 {
+                "required_fields":
+                    {
                     "first_name": "Test",
                     "last_name": "Testov",
                     "account_id": "8a17ff45-f174-428f-a8c8-a2f5a90883aa",
                     "card_number": 1234567812345678,
-                    "expiration_date": "07/27",
                     "amount": 1.59,
                     "country": "TST",
                     "username": "user1",
                     "password": "Password$"
+                    }
                 }
                 """;
     }
@@ -77,6 +87,8 @@ public class FakeProviderTestData {
     public static String getCreateFakeProviderPayOutRequestBodyWithoutPassword() {
         return """
                 {
+                "required_fields" :
+                    {
                     "first_name": "Test",
                     "last_name": "Testov",
                     "account_id": "8a17ff45-f174-428f-a8c8-a2f5a90883aa",
@@ -84,6 +96,7 @@ public class FakeProviderTestData {
                     "amount": 1.59,
                     "country": "TST",
                     "username": "user1"
+                    }
                 }
                 """;
     }
@@ -94,6 +107,8 @@ public class FakeProviderTestData {
 
         return """
                 {
+                "required_fields" :
+                    {
                     "first_name": "Test",
                     "last_name": "Testov",
                     "account_id": "8a17ff45-f174-428f-a8c8-a2f5a90883aa",
@@ -101,6 +116,7 @@ public class FakeProviderTestData {
                     "amount": 1.59,
                     "country": "TST",
                     "username": "user1"
+                    }
                 }
                 """;
     }

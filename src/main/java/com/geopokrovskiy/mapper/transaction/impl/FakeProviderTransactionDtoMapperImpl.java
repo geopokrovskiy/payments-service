@@ -21,7 +21,7 @@ public class FakeProviderTransactionDtoMapperImpl implements PrepareTransactionD
 
     @Override
     public Transaction map(PrepareTransactionDto prepareTransactionDto, String paymentMethodName) {
-        Map<String, String> fields = prepareTransactionDto.getFields();
+        Map<String, String> fields = prepareTransactionDto.getRequiredFields();
         Map<PaymentMethodRequiredFields, String> requiredFieldsStringMap =
                 fields.entrySet().stream().collect(Collectors.toMap(
                         entry -> paymentMethodRequiredFieldsService.getRequiredFieldsByNameAndPaymentMethodName(entry.getKey(), paymentMethodName), Map.Entry::getValue)
@@ -31,7 +31,7 @@ public class FakeProviderTransactionDtoMapperImpl implements PrepareTransactionD
 
     @Override
     public Transaction map(PrepareTransactionDto prepareTransactionDto, Long paymentMethodId) {
-        Map<String, String> fields = prepareTransactionDto.getFields();
+        Map<String, String> fields = prepareTransactionDto.getRequiredFields();
         Map<PaymentMethodRequiredFields, String> requiredFieldsStringMap =
                 fields.entrySet().stream().map(entry -> {
                             var key = entry.getKey();
