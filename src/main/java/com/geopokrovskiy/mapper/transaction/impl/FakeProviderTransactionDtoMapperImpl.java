@@ -1,6 +1,7 @@
 package com.geopokrovskiy.mapper.transaction.impl;
 
-import com.geopokrovskiy.dto.transaction_dto.PrepareTransactionDto;
+
+import com.geopokrovskiy.dto.payments_service.transaction.request.PrepareTransactionDto;
 import com.geopokrovskiy.entity.PaymentMethodRequiredFields;
 import com.geopokrovskiy.entity.Transaction;
 import com.geopokrovskiy.mapper.transaction.PrepareTransactionDtoMapper;

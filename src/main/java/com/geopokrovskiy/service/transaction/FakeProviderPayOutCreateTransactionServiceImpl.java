@@ -1,14 +1,14 @@
 package com.geopokrovskiy.service.transaction;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.geopokrovskiy.dto.payments_service.transaction.request.PrepareTransactionDto;
+import com.geopokrovskiy.dto.payments_service.transaction.request.fake_provider.FakeProviderPayOutPrepareTransactionDto;
+import com.geopokrovskiy.dto.payments_service.transaction.response.TransactionResponseDto;
+import com.geopokrovskiy.dto.payments_service.transaction.response.fake_provider.FakeProviderPayOutTransactionResponseDto;
 import com.geopokrovskiy.dto.transaction_dto.CreateTransactionDto;
-import com.geopokrovskiy.dto.transaction_dto.PrepareTransactionDto;
-import com.geopokrovskiy.dto.transaction_dto.TransactionResponseDto;
 import com.geopokrovskiy.dto.transaction_dto.impl.create_transaction.FakeProviderPayOutCardDto;
 import com.geopokrovskiy.dto.transaction_dto.impl.create_transaction.FakeProviderPayOutCreateTransactionDto;
 import com.geopokrovskiy.dto.transaction_dto.impl.create_transaction.FakeProviderPayOutCustomerDto;
-import com.geopokrovskiy.dto.transaction_dto.impl.prepare_transaction.FakeProviderPayOutPrepareTransactionDto;
-import com.geopokrovskiy.dto.transaction_dto.impl.transaction_response.FakeProviderTopUpTransactionResponseDto;
 import com.geopokrovskiy.entity.PaymentMethod;
 import com.geopokrovskiy.entity.Transaction;
 import com.geopokrovskiy.exception.RequiredFieldAbsentException;
@@ -89,7 +89,7 @@ public class FakeProviderPayOutCreateTransactionServiceImpl implements Transacti
         createTransactionDto.setCard(fakeProviderCardDto);
         createTransactionDto.setCustomer(fakeProviderPayOutCustomerDto);
 
-        createTransactionDto.setTransactionType("TOP_UP");
+        createTransactionDto.setTransactionType("WITHDRAWAL");
         createTransactionDto.setTransactionStatus("IN_PROGRESS");
         createTransactionDto.setLanguage("en");
 
@@ -121,13 +121,13 @@ public class FakeProviderPayOutCreateTransactionServiceImpl implements Transacti
             HttpEntity<CreateTransactionDto> createTransactionDtoHttpEntity = new HttpEntity<>(fakeProviderPayOutCreateTransactionDto, headers);
             responseEntity = restTemplate.postForEntity(url, createTransactionDtoHttpEntity, String.class);
             String responseBody = responseEntity.getBody();
-            return objectMapper.readValue(responseBody, FakeProviderTopUpTransactionResponseDto.class);
+            return objectMapper.readValue(responseBody, FakeProviderPayOutTransactionResponseDto.class);
         } catch (HttpClientErrorException e) {
             log.error(e.getMessage());
             throw new HttpClientErrorException(e.getStatusCode(), "Error during dto serialization");
         } catch (RestClientException e) {
-            log.error("The provider is not available");
-            throw new RestClientException("The provider is not available");
+            log.error(e.getMessage());
+            throw new RestClientException(e.getMessage());
         } catch (IOException e) {
             log.error("Error during dto serialization: {}", e.getMessage());
             throw new IOException("Error during dto serialization");

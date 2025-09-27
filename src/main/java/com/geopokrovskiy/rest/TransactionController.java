@@ -1,7 +1,6 @@
 package com.geopokrovskiy.rest;
 
-import com.geopokrovskiy.dto.transaction_dto.PrepareTransactionDto;
-import com.geopokrovskiy.dto.transaction_dto.TransactionResponseDto;
+import com.geopokrovskiy.dto.payments_service.transaction.request.PrepareTransactionDto;
 import com.geopokrovskiy.entity.PaymentMethod;
 import com.geopokrovskiy.service.PaymentMethodService;
 import com.geopokrovskiy.service.transaction.TransactionService;
@@ -24,9 +23,9 @@ public class TransactionController {
     private final PaymentMethodService paymentMethodService;
     private final Map<String, TransactionService> services;
 
-    @PostMapping()
-    public ResponseEntity<TransactionResponseDto> createTransaction(@RequestBody PrepareTransactionDto requestBody,
-                                                                    @RequestParam Long paymentMethodId) throws Exception {
+    @PostMapping("/{paymentMethodId}")
+    public ResponseEntity<?> createTransaction(@RequestBody PrepareTransactionDto requestBody,
+                                               @PathVariable Long paymentMethodId) throws Exception {
         PaymentMethod paymentMethod = paymentMethodService.getPaymentMethodById(paymentMethodId);
         String paymentMethodName = paymentMethod.getName();
         TransactionService transactionService = services.get(paymentMethodName);

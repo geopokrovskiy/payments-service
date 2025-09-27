@@ -1,6 +1,6 @@
 package com.geopokrovskiy.errorhandling;
 
-import com.geopokrovskiy.dto.transaction_dto.impl.transaction_response.error.ErrorTransactionResponseDto;
+import com.geopokrovskiy.dto.payments_service.transaction.response.ErrorTransactionResponseDto;
 import com.geopokrovskiy.exception.InvalidPaymentMethodException;
 import com.geopokrovskiy.exception.RequiredFieldAbsentException;
 import com.geopokrovskiy.exception.RequiredFieldInvalidException;

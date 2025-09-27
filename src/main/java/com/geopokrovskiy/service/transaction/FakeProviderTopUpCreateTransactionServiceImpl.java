@@ -1,14 +1,14 @@
 package com.geopokrovskiy.service.transaction;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.geopokrovskiy.dto.payments_service.transaction.request.PrepareTransactionDto;
+import com.geopokrovskiy.dto.payments_service.transaction.request.fake_provider.FakeProviderTopUpPrepareTransactionDto;
+import com.geopokrovskiy.dto.payments_service.transaction.response.TransactionResponseDto;
+import com.geopokrovskiy.dto.payments_service.transaction.response.fake_provider.FakeProviderTopUpTransactionResponseDto;
 import com.geopokrovskiy.dto.transaction_dto.CreateTransactionDto;
-import com.geopokrovskiy.dto.transaction_dto.PrepareTransactionDto;
-import com.geopokrovskiy.dto.transaction_dto.TransactionResponseDto;
 import com.geopokrovskiy.dto.transaction_dto.impl.create_transaction.FakeProviderTopUpCardDto;
 import com.geopokrovskiy.dto.transaction_dto.impl.create_transaction.FakeProviderTopUpCreateTransactionDto;
 import com.geopokrovskiy.dto.transaction_dto.impl.create_transaction.FakeProviderTopUpCustomerDto;
-import com.geopokrovskiy.dto.transaction_dto.impl.prepare_transaction.FakeProviderTopUpPrepareTransactionDto;
-import com.geopokrovskiy.dto.transaction_dto.impl.transaction_response.FakeProviderTopUpTransactionResponseDto;
 import com.geopokrovskiy.entity.PaymentMethod;
 import com.geopokrovskiy.entity.Transaction;
 import com.geopokrovskiy.exception.RequiredFieldAbsentException;
@@ -85,6 +85,7 @@ public class FakeProviderTopUpCreateTransactionServiceImpl implements Transactio
         filledRequiredFields = verifyRequiredFields(paymentMethod, transaction);
 
         FakeProviderTopUpCardDto fakeProviderCardDto = new FakeProviderTopUpCardDto();
+        // TODO CONSTANTS
         fakeProviderCardDto.setCvv(filledRequiredFields.get("cvv"));
         fakeProviderCardDto.setCardNumber(filledRequiredFields.get("card_number"));
         fakeProviderCardDto.setExpirationDate(filledRequiredFields.get("expiration_date"));
@@ -138,8 +139,8 @@ public class FakeProviderTopUpCreateTransactionServiceImpl implements Transactio
             log.error(e.getMessage());
             throw new HttpClientErrorException(e.getStatusCode(), "Error during dto serialization");
         } catch (RestClientException e) {
-            log.error("The provider is not available");
-            throw new RestClientException("The provider is not available");
+            log.error(e.getMessage());
+            throw new RestClientException(e.getMessage());
         } catch (IOException e) {
             log.error("Error during dto serialization: {}", e.getMessage());
             throw new IOException("Error during dto serialization");

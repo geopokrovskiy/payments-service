@@ -1,7 +1,8 @@
 package com.geopokrovskiy.service.transaction;
 
-import com.geopokrovskiy.dto.transaction_dto.PrepareTransactionDto;
-import com.geopokrovskiy.dto.transaction_dto.TransactionResponseDto;
+
+import com.geopokrovskiy.dto.payments_service.transaction.request.PrepareTransactionDto;
+import com.geopokrovskiy.dto.payments_service.transaction.response.TransactionResponseDto;
 import com.geopokrovskiy.entity.PaymentMethod;
 import com.geopokrovskiy.entity.PaymentMethodRequiredFields;
 import com.geopokrovskiy.entity.Transaction;
