@@ -7,13 +7,15 @@ providers:
           port: 8083
           uri: /api/v1/payments/top_up
         notification-url:
-          host: webhook-host
-          port: 8080
+          host: localhost
+          port: 8089
+          uri: /api/v1/webhooks/payment-provider/fake-provider
       pay-out:
         provider-url:
           host: localhost
           port: 8083
           uri: /api/v1/payments/pay_out
         notification-url:
-          host: webhook-host
-          port: 8080
+          host: localhost
+          port: 8089
+          uri: /api/v1/webhooks/payment-provider/fake-provider

@@ -59,6 +59,9 @@ public class FakeProviderTopUpCreateTransactionServiceImpl implements Transactio
     @Value("${providers.fake-provider.methods.top-up.notification-url.port}")
     private String NOTIFICATION_URL_PORT;
 
+    @Value("${providers.fake-provider.methods.top-up.notification-url.uri}")
+    private String NOTIFICATION_URL_URI;
+
     @Value("${providers.fake-provider.methods.top-up.provider-url.host}")
     private String PROVIDER_URL_HOST;
 
@@ -109,7 +112,9 @@ public class FakeProviderTopUpCreateTransactionServiceImpl implements Transactio
         createTransactionDto.setUpdatedAt(LocalDateTime.now());
         createTransactionDto.setCreatedAt(LocalDateTime.now());
 
-        createTransactionDto.setNotificationURL("http://" + NOTIFICATION_URL_HOST + ":" + NOTIFICATION_URL_PORT);
+        createTransactionDto.setNotificationURL("http://" + NOTIFICATION_URL_HOST
+                + ":" + NOTIFICATION_URL_PORT
+                + NOTIFICATION_URL_URI);
 
         createTransactionDto.setUsername(filledRequiredFields.get("username"));
         createTransactionDto.setPassword(filledRequiredFields.get("password"));
